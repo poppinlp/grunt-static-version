@@ -14,6 +14,7 @@ module.exports = function (grunt) {
             path = require('path'),
             fs = require('fs'),
             files,
+            currentFile,
             task,
             changed;
 
@@ -32,7 +33,8 @@ module.exports = function (grunt) {
 
             while (len--) {
                 changed = false;
-                content = grunt.file.read(list[len], { encoding: 'utf8' });
+                currentFile = list[len];
+                content = grunt.file.read(currentFile, { encoding: 'utf8' });
                 if (files.ignore) {
                     for (key in files.ignore) {
                         if (files.ignore.hasOwnProperty(key)) {
@@ -44,8 +46,8 @@ module.exports = function (grunt) {
                 content = checkFile('js', content);
                 content = checkFile('css', content);
                 if (changed) {
-                    grunt.file.write(list[len], content, { encoding: 'utf8' });
-                    grunt.log.ok('Update static resource version for ' + list[len] + '.');
+                    grunt.file.write(currentFile, content, { encoding: 'utf8' });
+                    grunt.log.ok('Update static resource version for ' + currentFile + '.');
                 }
             }
         }
@@ -63,21 +65,27 @@ module.exports = function (grunt) {
 
             return content.replace(fileReg, function (word) {
                 return word.replace(wordReg, function (word) {
-                    var file = path.normalize(files.baseDir + path.sep + word.match(/".*?"/i)[0].slice(1, -1)),
+                    var file = path.normalize((files.baseDir || '') + path.sep + word.match(/".*?"/i)[0].slice(1, -1)),
+                        timeInFile,
                         lastChange;
 
                     if (file.indexOf('?') !== -1) {
-                        lastChange = fs.statSync(file.slice(0, -14)).mtime.getTime();
-                        return word.replace(/\?\d+"/gi, function (time) {
-                            if (time.slice(1, -1) === lastChange.toString()) {
-                                return time;
-                            } else {
-                                changed = true;
-                                return '?' + lastChange + '"';
-                            }
-                        });
+                        timeInFile = file.slice(-13);
+                        file = file.slice(0, -14);
+                    }
+                    if (!grunt.file.exists(file)) {
+                        grunt.log.warn('File not found: ' + file + ' in ' + currentFile);
+                        return word;
+                    }
+                    lastChange = fs.statSync(file).mtime.getTime();
+                    if (timeInFile) {
+                        if (timeInFile === lastChange.toString()) {
+                            return word;
+                        } else {
+                            changed = true;
+                            return word.slice(0, -15) + '?' + lastChange + '"';
+                        }
                     } else {
-                        lastChange = fs.statSync(file).mtime.getTime();
                         changed = true;
                         return word.slice(0, -1) + '?' + lastChange + '"';
                     }

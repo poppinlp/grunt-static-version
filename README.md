@@ -106,6 +106,7 @@ grunt test
 
 ## History
 
+- 0.0.4 Update and bugfix
 - 0.0.3 Bugfix
 - 0.0.2 Add 'files.ignore' option
 - 0.0.1 init
