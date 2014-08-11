@@ -30,17 +30,21 @@ Task targets, files and options may be specified according to the grunt [Configu
 
 ## Options
 
-### files.src
+### files.src {String}
 
 Source path. Support path pattern.
 
-### files.baseDir
+### files.baseDir {String}
 
 The static resource base directory.
 
-### files.filter
+### files.filter {Object}
 
 The src file path filter.See [this page](https://github.com/isaacs/minimatch#options) for more options about filter.
+
+### files.ignore {Object}
+
+Ignore the text between object key and value. It’s a good idea to use this with other templates.
 
 ## Usage Examples
 
@@ -75,6 +79,23 @@ htmlhintplus: {
 }
 ```
 
+### Use ignore
+
+```js
+// Project configuration
+htmlhintplus: {
+    dist: {
+        files: {
+            src: 'path/to/file.html',
+            baseDir: 'base/dir/',
+            ignore: {
+                '{{': '}}'
+            }
+        }
+    }
+}
+```
+
 ## Demo
 
 Run the test demo:
@@ -85,4 +106,5 @@ grunt test
 
 ## History
 
+- 0.0.2 Add 'files.ignore' option
 - 0.0.1 init

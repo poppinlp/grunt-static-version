@@ -10,7 +10,10 @@ module.exports = function(grunt) {
             dist: {
                 files: {
                     src: 'test/*.html',
-                    baseDir: 'test/'
+                    baseDir: 'test/',
+                    ignore: {
+                        '{{': '}}'
+                    }
                 }
             }
         }

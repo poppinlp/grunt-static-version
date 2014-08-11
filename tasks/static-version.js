@@ -26,11 +26,21 @@ module.exports = function (grunt) {
 
         function doTask (list) {
             var len = list.length,
-                content;
+                content,
+                key,
+                reg;
 
             while (len--) {
                 changed = false;
                 content = grunt.file.read(list[len], { encoding: 'utf8' });
+                if (files.ignore) {
+                    for (key in files.ignore) {
+                        if (files.ignore.hasOwnProperty(key)) {
+                            reg = new RegExp(key + '.*' + files.ignore[key], 'ig');
+                            content = content.replace(reg, '');
+                        }
+                    }
+                }
                 content = checkFile('js', content);
                 content = checkFile('css', content);
                 if (changed) {
