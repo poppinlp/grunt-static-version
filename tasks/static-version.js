@@ -36,7 +36,7 @@ module.exports = function (grunt) {
                 if (files.ignore) {
                     for (key in files.ignore) {
                         if (files.ignore.hasOwnProperty(key)) {
-                            reg = new RegExp(key + '.*' + files.ignore[key], 'ig');
+                            reg = new RegExp(key + '.*?' + files.ignore[key], 'ig');
                             content = content.replace(reg, '');
                         }
                     }
@@ -54,16 +54,16 @@ module.exports = function (grunt) {
             var fileReg, wordReg;
 
             if (type === 'js') {
-                fileReg = /<script.*src=".*"/gi;
-                wordReg = /src=".*"/gi;
+                fileReg = /<script.*?src=".*?"/gi;
+                wordReg = /src=".*?"/gi;
             } else {
-                fileReg = /<link.*href=".*"/gi;
-                wordReg = /href=".*"/gi;
+                fileReg = /<link.*?href=".*?"/gi;
+                wordReg = /href=".*?"/gi;
             }
 
             return content.replace(fileReg, function (word) {
                 return word.replace(wordReg, function (word) {
-                    var file = path.normalize(files.baseDir + path.sep + word.match(/".*"/i)[0].slice(1, -1)),
+                    var file = path.normalize(files.baseDir + path.sep + word.match(/".*?"/i)[0].slice(1, -1)),
                         lastChange;
 
                     if (file.indexOf('?') !== -1) {
