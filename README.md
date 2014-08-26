@@ -30,9 +30,9 @@ Task targets, files and options may be specified according to the grunt [Configu
 
 ## Options
 
-### files.src {String}
+### files.src {String|Array}
 
-Source path. Support path pattern.
+Source path. Support file path, glob and globs.
 
 ### files.baseDir {String}
 
@@ -40,7 +40,7 @@ The static resource base directory.
 
 ### files.filter {Object}
 
-The src file path filter.See [this page](https://github.com/isaacs/minimatch#options) for more options about filter.
+The options for glob in `files.src`. See [glob options](https://github.com/isaacs/minimatch#options) for more detail.
 
 ### files.ignore {Object}
 
@@ -62,7 +62,7 @@ htmlhintplus: {
 }
 ```
 
-### Use pattern and filter
+### Use glob and filter
 
 ```js
 // Project configuration
