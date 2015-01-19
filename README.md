@@ -46,6 +46,16 @@ The options for glob in `files.src`. See [glob options](https://github.com/isaac
 
 Ignore the text between object key and value. It’s a good idea to use this with other templates.
 
+Files linked by http, https, ftp or similar protocal will be auto ignore.
+
+### files.output {String}
+
+Define which way to setting version. Value could be 'timestamp' or 'md5'. Default is 'timestamp'.
+
+In 'md5' way, path will be like this: filename.md5.suffix . And will auto create the md5 named file in the same directory.
+
+In 'timestamp' way, path will be like this: filename?timestamp .
+
 ## Usage Examples
 
 ### Basic
@@ -81,6 +91,10 @@ htmlhintplus: {
 
 ### Use ignore
 
+```html
+<script src="{{ template variable }}/path/to/file"></script>
+```
+
 ```js
 // Project configuration
 htmlhintplus: {
@@ -106,6 +120,7 @@ grunt test
 
 ## History
 
+- 0.0.6 Add output option
 - 0.0.5 Bugfix
 - 0.0.4 Update and bugfix
 - 0.0.3 Bugfix

@@ -13,11 +13,13 @@ module.exports = function(grunt) {
                     baseDir: 'test/',
                     ignore: {
                         '{{': '}}'
-                    }
+                    },
+                    output: 'md5'
                 }
             }
         }
     });
+
     grunt.loadTasks('tasks/');
     grunt.loadNpmTasks('grunt-contrib-jshint');
 
