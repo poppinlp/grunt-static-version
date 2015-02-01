@@ -62,7 +62,7 @@ In 'timestamp' way, path will be like this: filename?timestamp .
 
 ```js
 // Project configuration
-htmlhintplus: {
+'static-version': {
     dist: {
         files: {
             src: 'path/to/file.html',
@@ -76,7 +76,7 @@ htmlhintplus: {
 
 ```js
 // Project configuration
-htmlhintplus: {
+'static-version': {
     dist: {
         files: {
             src: 'to/**/*.html',
@@ -97,7 +97,7 @@ htmlhintplus: {
 
 ```js
 // Project configuration
-htmlhintplus: {
+'static-version': {
     dist: {
         files: {
             src: 'path/to/file.html',
@@ -120,6 +120,7 @@ grunt test
 
 ## History
 
+- 0.0.7 Reconstruction and use module [file-changed](https://github.com/poppinlp/file-changed)
 - 0.0.6 Add output option
 - 0.0.5 Bugfix
 - 0.0.4 Update and bugfix
