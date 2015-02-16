@@ -78,23 +78,23 @@ module.exports = function (grunt) {
 
             return content.replace(fileReg, function (word) {
                 return word.replace(wordReg, function (word) {
-                    var linkPath = word.match(/".*?"/i)[0].slice(1, -1);
+                    var linkPath = word.match(/".*?"/i)[0].slice(1, -1),
+                        key, reg;
 
                     // auto ignore web path like 'http[s]://filename', 'ftp://filename' e.t.c
                     if (linkPath.search(/^.*?:\/\/+.$/i) === 0) return word;
-
-                    var filePath = path.normalize((files.baseDir || '') + '/' + linkPath),
-                        key, reg;
 
                     // ignore from setting, use for template path such as '{{template variable}}/path/to/file' .
                     if (files.ignore) {
                         for (key in files.ignore) {
                             if (files.ignore.hasOwnProperty(key)) {
                                 reg = new RegExp(key + '.*?' + files.ignore[key], 'ig');
-                                filePath = filePath.replace(reg, '');
+                                linkPath = linkPath.replace(reg, '');
                             }
                         }
                     }
+
+                    var filePath = path.normalize((files.baseDir || '') + '/' + linkPath);
 
                     // output in timestamp or md5
                     if (!files.output || files.output !== 'md5') {
