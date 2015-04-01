@@ -120,6 +120,7 @@ grunt test
 
 ## History
 
+- 0.0.9 Update [file-changed](https://github.com/poppinlp/file-changed) to 0.1.0
 - 0.0.8 Bugfix
 - 0.0.7 Reconstruction and use module [file-changed](https://github.com/poppinlp/file-changed)
 - 0.0.6 Add output option
