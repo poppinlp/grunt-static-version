@@ -1,27 +1,16 @@
 module.exports = function(grunt) {
     grunt.config.init({
-        "jshint": {
-            options: grunt.file.readJSON(__dirname + '/.jshintrc'),
-            www: {
-                src: ['tasks/static-version.js']
-            }
-        },
         "static-version": {
             dist: {
-                files: {
-                    src: 'test/*.html',
+                options: {
                     baseDir: 'test/',
-                    ignore: {
-                        '{{': '}}'
-                    },
-                    output: 'md5'
-                }
+                    output: 'timestamp'
+                },
+                src: ['test/index.html', 'test/test2.html']
             }
         }
     });
 
     grunt.loadTasks('tasks/');
-    grunt.loadNpmTasks('grunt-contrib-jshint');
-
-    grunt.registerTask('test', ['jshint', 'static-version']);
+    grunt.registerTask('test', ['static-version']);
 };

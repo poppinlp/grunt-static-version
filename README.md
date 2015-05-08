@@ -30,31 +30,43 @@ Task targets, files and options may be specified according to the grunt [Configu
 
 ## Options
 
-### files.src {String|Array}
+### src {String|Array|Glob}
+
+__Required.__
 
 Source path. Support file path, glob and globs.
 
-### files.baseDir {String}
+### options.output {String}
 
-The static resource base directory.
+Default: `md5`.
 
-### files.filter {Object}
-
-The options for glob in `files.src`. See [glob options](https://github.com/isaacs/minimatch#options) for more detail.
-
-### files.ignore {Object}
-
-Ignore the text between object key and value. It’s a good idea to use this with other templates.
-
-Files linked by http, https, ftp or similar protocal will be auto ignore.
-
-### files.output {String}
-
-Define which way to setting version. Value could be 'timestamp' or 'md5'. Default is 'timestamp'.
+Define which way to setting version. Value could be 'timestamp' or 'md5'.
 
 In 'md5' way, path will be like this: filename.md5.suffix . And will auto create the md5 named file in the same directory.
 
 In 'timestamp' way, path will be like this: filename?timestamp .
+
+### options.symbol {String}
+
+Default: `<!--##>`.
+
+The wrap symbol use to wrap resource which need to add version code. Such as:
+
+```html
+<link rel="stylesheet" href="<!--##>css/index.css<!--##>">
+```
+
+### options.baseDir {String}
+
+Default: `./`.
+
+The static resource base directory. Resource final path is `baseDir` + path in wrap symbol.
+
+### options.warn {Boolean}
+
+Default: `false`.
+
+Whether to print warn message or not.
 
 ## Usage Examples
 
@@ -62,51 +74,29 @@ In 'timestamp' way, path will be like this: filename?timestamp .
 
 ```js
 // Project configuration
-'static-version': {
-    dist: {
-        files: {
-            src: 'path/to/file.html',
-            baseDir: 'base/dir/'
-        }
-    }
+"static-version": {
+	dist: {
+		options: {
+			baseDir: 'path/to/base/dir/',
+			output: 'ts'
+		},
+		src: 'test/foobar.html'
+	}
 }
 ```
 
-### Use glob and filter
+### Use src array and glob
 
 ```js
 // Project configuration
 'static-version': {
     dist: {
-        files: {
-            src: 'to/**/*.html',
-            baseDir: 'base/dir/',
-            filter: {
-                cwd: 'path/'
-            }
-        }
-    }
-}
-```
-
-### Use ignore
-
-```html
-<script src="{{ template variable }}/path/to/file"></script>
-```
-
-```js
-// Project configuration
-'static-version': {
-    dist: {
-        files: {
-            src: 'path/to/file.html',
-            baseDir: 'base/dir/',
-            ignore: {
-                '{{': '}}'
-            }
-        }
-    }
+		src: [
+			'path/1.html',
+			'path/to/*.html',
+			'path/to/foobar/**/*.html',
+		]
+	}
 }
 ```
 
@@ -120,12 +110,4 @@ grunt test
 
 ## History
 
-- 0.0.9 Update [file-changed](https://github.com/poppinlp/file-changed) to 0.1.0
-- 0.0.8 Bugfix
-- 0.0.7 Reconstruction and use module [file-changed](https://github.com/poppinlp/file-changed)
-- 0.0.6 Add output option
-- 0.0.5 Bugfix
-- 0.0.4 Update and bugfix
-- 0.0.3 Bugfix
-- 0.0.2 Add 'files.ignore' option
-- 0.0.1 init
+- 0.1.0 Reconstruction.
