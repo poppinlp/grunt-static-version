@@ -4,7 +4,8 @@ module.exports = function(grunt) {
             dist: {
                 options: {
                     baseDir: 'test/',
-                    output: 'timestamp'
+                    output: 'timestamp',
+                    warn: true
                 },
                 src: ['test/index.html', 'test/test2.html']
             }

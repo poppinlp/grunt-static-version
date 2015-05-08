@@ -13,7 +13,7 @@ module.exports = function (grunt) {
         this.requiresConfig([this.name, this.target, "src"].join("."));
 
         var options = this.options({
-                symbol: '<!--##>',
+                symbol: '<!--##-->',
                 baseDir: './',
                 warn: false,
                 output: 'md5'
@@ -25,26 +25,26 @@ module.exports = function (grunt) {
 
         this.files.forEach(function (task) {
             task.src.forEach(function (file) {
-                grunt.file.write(file, checkFile(grunt.file.read(file)));
+                grunt.file.write(file, checkFile(file, grunt.file.read(file)));
             });
         });
         fc.save();
 
-        function checkFile(content) {
+        function checkFile(curFileName, content) {
             var reg = new RegExp(options.symbol + '.*?' + options.symbol, 'gi');
 
             return content.replace(reg, function (word) {
                 var fileName = word.slice(options.symbol.length, -options.symbol.length);
 
                 if (options.output === 'md5') {
-                    return md5(fileName);
+                    return md5(fileName, curFileName);
                 } else {
-                    return ts(fileName);
+                    return ts(fileName, curFileName);
                 }
             });
         }
 
-        function ts(file) {
+        function ts(file, curFileName) {
             var index = file.indexOf('?'),
                 filePath,
                 tsInFile,
@@ -60,7 +60,7 @@ module.exports = function (grunt) {
 
             // if can't find that file, log warn and return
             if (!grunt.file.exists(filePath)) {
-                options.warn && grunt.log.warn('File not found: ' + filePath);
+                options.warn && grunt.log.warn('File not found: ' + filePath + ' in ' + curFileName);
                 return file;
             }
 
@@ -76,7 +76,7 @@ module.exports = function (grunt) {
             }
         }
 
-        function md5(file) {
+        function md5(file, curFileName) {
             var filePath = path.join(options.baseDir, file),
                 index = filePath.lastIndexOf(path.sep) + 1,
                 relativePath = filePath.slice(0, index),
@@ -88,7 +88,7 @@ module.exports = function (grunt) {
 
             // if can't find that file, log warn and return
             if (!grunt.file.exists(originFilePath)) {
-                options.warn && grunt.log.warn('File not found: ' + originFileName);
+                options.warn && grunt.log.warn('File not found: ' + originFileName + ' in ' + curFileName);
                 return file;
             }
 

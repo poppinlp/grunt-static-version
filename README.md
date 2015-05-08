@@ -48,12 +48,12 @@ In 'timestamp' way, path will be like this: filename?timestamp .
 
 ### options.symbol {String}
 
-Default: `<!--##>`.
+Default: `<!--##-->`.
 
 The wrap symbol use to wrap resource which need to add version code. Such as:
 
 ```html
-<link rel="stylesheet" href="<!--##>css/index.css<!--##>">
+<link rel="stylesheet" href="<!--##-->css/index.css<!--##-->">
 ```
 
 ### options.baseDir {String}
@@ -110,4 +110,5 @@ grunt test
 
 ## History
 
+- 0.1.1 Bug fix
 - 0.1.0 Reconstruction.
