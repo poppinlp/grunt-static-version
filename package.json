@@ -1,6 +1,6 @@
 {
   "name": "grunt-static-version",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Grunt task to update static resource version in html file.",
   "main": "tasks/static-version.js",
   "repository": {
@@ -30,10 +30,9 @@
     "test": "grunt test"
   },
   "dependencies": {
-    "file-changed": "^0.1.0",
-    "grunt": "^0.4.5"
+    "file-changed": "^0.1.0"
   },
   "devDependencies": {
-    "grunt-contrib-jshint": "^0.11.0"
+    "grunt": "^0.4.5"
   }
 }
