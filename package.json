@@ -1,6 +1,6 @@
 {
   "name": "grunt-static-version",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "description": "Grunt task to update static resource version in html file.",
   "main": "tasks/static-version.js",
   "repository": {
@@ -27,8 +27,7 @@
     "version"
   ],
   "scripts": {
-    "test": "grunt test",
-    "preinstall": "npm list grunt-cli -g || npm install grunt-cli -g"
+    "test": "grunt test"
   },
   "dependencies": {
     "file-changed": "^0.1.0",
