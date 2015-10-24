@@ -6,6 +6,8 @@
 
 Grunt task to update static resource version in html file.
 
+__The configuration for 0.1.x and 0.2.x are not compatible. If you wanna use 0.1.x, see tag 0.1.2.__
+
 ## Getting Started
 
 This plugin requires Grunt >=0.4.0
