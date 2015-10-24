@@ -38,8 +38,6 @@ Source path. Support file path, glob and globs.
 
 ### dest {String}
 
-__Required.__
-
 Output path. Will write result to path like `path.join(dest, fileName)`.
 
 ### options.output {String}
@@ -159,8 +157,11 @@ grunt test
 
 ## History
 
+- 0.2.1
+	- Change `dest` option to non-essential. So if it not set, task will rewrite the src file.
 - 0.2.0
 	- Add `dest` option for output result
 	- Support push file to CDN
+	- Reconstruct all task
 - 0.1.2 Bug fix
 - 0.1.0 Reconstruction.

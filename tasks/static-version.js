@@ -5,7 +5,6 @@ module.exports = function (grunt) {
         var that = this;
 
         that.requiresConfig([that.name, that.target, "src"].join("."));
-        that.requiresConfig([that.name, that.target, "dest"].join("."));
 
         var path = require('path'),
             fc = require('file-changed'),
@@ -65,7 +64,8 @@ module.exports = function (grunt) {
                             if (err) {
                                 console.error(err);
                             } else {
-                                grunt.file.write(path.join(task.dest, path.basename(filePath)), content);
+                                var writePath = task.dest ? path.join(task.dest, path.basename(filePath)) : filePath;
+                                grunt.file.write(writePath, content);
                                 grunt.log.ok('Update version successfully => ' + filePath);
                             }
 
