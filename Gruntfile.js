@@ -7,7 +7,8 @@ module.exports = function(grunt) {
                     output: 'timestamp',
                     warn: true
                 },
-                src: ['test/index.html', 'test/test2.html']
+                src: 'test/html/*.html',
+                dest: 'test/output/'
             }
         }
     });

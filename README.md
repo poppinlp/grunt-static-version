@@ -36,6 +36,12 @@ __Required.__
 
 Source path. Support file path, glob and globs.
 
+### dest {String}
+
+__Required.__
+
+Output path. Will write result to path like `path.join(dest, fileName)`.
+
 ### options.output {String}
 
 Default: `md5`.
@@ -61,6 +67,24 @@ The wrap symbol use to wrap resource which need to add version code. Such as:
 Default: `./`.
 
 The static resource base directory. Resource final path is `baseDir` + path in wrap symbol.
+
+### options.cdn {Function}
+
+Default: `undefined`
+
+Push static resource to your CDN and use `cdnDomain` option and this return path to load that resource.
+
+The arguments for `cdn` function are file name and callback function.
+Error message and CDN return url would be arguments for callback function, like `function (err, ret)`.
+There are some [cdn-adapter](https://www.npmjs.com/search?q=static-version-cdn) packages for this option, and you could create your adapter if you want.
+
+See example below.
+
+### options.cdnDomain {String}
+
+Default: ``.
+
+If `cdn` option is specified, this will be the domain for request url.
 
 ### options.warn {Boolean}
 
@@ -100,6 +124,31 @@ Whether to print warn message or not.
 }
 ```
 
+### Use qiniu CDN
+
+```js
+'static-version': {
+    dist: {
+		options: {
+			cdn: require('static-version-cdn-qiniu')({
+				ak: 'xxxxxx',
+				sk: 'xxxxxx',
+				bucket: 'bucketName',
+				prefix: 'foobar/'
+			}),
+			cdnDomain: 'http://xxx.yyy'
+		},
+		src: [
+			'path/1.html',
+			'path/to/*.html',
+			'path/to/foobar/**/*.html',
+		]
+	}
+}
+```
+
+__You could write your own adapter to push file to your CDN service.__
+
 ## Demo
 
 Run the test demo:
@@ -110,5 +159,8 @@ grunt test
 
 ## History
 
-- 0.1.1 Bug fix
+- 0.2.0
+	- Add `dest` option for output result
+	- Support push file to CDN
+- 0.1.2 Bug fix
 - 0.1.0 Reconstruction.

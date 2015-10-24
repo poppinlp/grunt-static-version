@@ -1,108 +1,170 @@
-/*
- * grunt-static-version
- * https://github.com/poppinlp/grunt-static-version
- *
- * Copyright (c) 2014 "PoppinLp" Liang Peng
- * Licensed under the MIT license.
- */
-
 'use strict';
 
 module.exports = function (grunt) {
     grunt.registerMultiTask('static-version', 'Update static resource version', function () {
-        this.requiresConfig([this.name, this.target, "src"].join("."));
+        var that = this;
 
-        var options = this.options({
+        that.requiresConfig([that.name, that.target, "src"].join("."));
+        that.requiresConfig([that.name, that.target, "dest"].join("."));
+
+        var path = require('path'),
+            fc = require('file-changed'),
+            async = require('async'),
+            done = this.async(),
+            options = that.options({
                 symbol: '<!--##-->',
                 baseDir: './',
                 warn: false,
-                output: 'md5'
+                output: 'md5',
+                cdn: false,
+                cdnDomain: ''
             }),
-            path = require('path'),
-            fs = require('fs'),
-            crypto = require('crypto'),
-            fc = require('file-changed');
+            cache = {};
 
-        this.files.forEach(function (task) {
-            task.src.forEach(function (file) {
-                grunt.file.write(file, checkFile(file, grunt.file.read(file)));
-            });
+        async.waterfall(that.files.map(function (task) {
+            return function (cb) {
+                async.parallel(task.src.map(function (filePath) {
+                    return function (cb) {
+                        var reg = new RegExp(options.symbol + '.*?' + options.symbol, 'gi'),
+                            content = grunt.file.read(filePath);
+
+                        async.parallel(content.match(reg).map(function (word) {
+                            return function (cb) {
+                                var targetFile = word.slice(options.symbol.length, -options.symbol.length);
+
+                                if (options.cdn) {
+                                    options.cdn(path.join(options.baseDir, targetFile), function (err, ret) {
+                                        if (err) {
+                                            cb(err);
+                                            return;
+                                        }
+                                        content = content.replace(new RegExp(word, 'g'), options.cdnDomain + ret.key + '?' + ret.hash);
+                                        cb(null, ret);
+                                    });
+                                } else if (options.output === 'md5') {
+                                    md5(targetFile, filePath, function (err, ret) {
+                                        if (err) {
+                                            cb(err);
+                                            return;
+                                        }
+                                        content = content.replace(new RegExp(word, 'g'), ret);
+                                        cb(null, ret);
+                                    });
+                                } else {
+                                    ts(targetFile, filePath, function (err, ret) {
+                                        if (err) {
+                                            cb(err);
+                                            return;
+                                        }
+                                        content = content.replace(new RegExp(word, 'g'), ret);
+                                        cb(null, ret);
+                                    });
+                                }
+                            };
+                        }), function (err, res) {
+                            if (err) {
+                                console.error(err);
+                            } else {
+                                grunt.file.write(path.join(task.dest, path.basename(filePath)), content);
+                                grunt.log.ok('Update version successfully => ' + filePath);
+                            }
+
+                            cb(err, res);
+                        });
+                    };
+                }), cb);
+            };
+        }), function (err, res) {
+            if (err) {
+                console.error(err);
+            } else {
+                grunt.log.ok('Static version all tasks done successfully!');
+                fc.save();
+                done();
+            }
         });
-        fc.save();
 
-        function checkFile(curFileName, content) {
+        function checkFile(filePath, content) {
             var reg = new RegExp(options.symbol + '.*?' + options.symbol, 'gi');
 
-            return content.replace(reg, function (word) {
-                var fileName = word.slice(options.symbol.length, -options.symbol.length);
-
-                if (options.output === 'md5') {
-                    return md5(fileName, curFileName);
-                } else {
-                    return ts(fileName, curFileName);
-                }
+            async.parallel(content.match(reg).map(function (value) {
+                return new Promise(function (resolve, reject) {
+                    var targetFile = value.slice(options.symbol.length, -options.symbol.length);
+                    cdn(targetFile).then(function (res) {
+                        resolve(res);
+                    });
+                });
+            }), function (err, ret) {
+                console.log(err, ret);
             });
         }
 
-        function ts(file, curFileName) {
-            var index = file.indexOf('?'),
-                filePath,
+        function ts(originTarget, filePath, cb) {
+            var index = originTarget.indexOf('?'),
+                targetPath,
                 tsInFile,
                 lastChange;
 
             // if there is a timestamp, remove it
             if (index !== -1) {
-                filePath = path.join(options.baseDir, file.slice(0, index));
-                tsInFile = file.slice(index + 1);
+                targetPath = path.join(options.baseDir, originTarget.slice(0, index));
+                tsInFile = originTarget.slice(index + 1);
             } else {
-                filePath = path.join(options.baseDir, file);
+                targetPath = path.join(options.baseDir, originTarget);
             }
 
             // if can't find that file, log warn and return
-            if (!grunt.file.exists(filePath)) {
-                options.warn && grunt.log.warn('File not found: ' + filePath + ' in ' + curFileName);
-                return file;
+            if (!grunt.file.exists(targetPath)) {
+                options.warn && grunt.log.warn('File not found: ' + targetPath + ' in ' + filePath);
+                cb(null, originTarget);
+                return;
             }
 
             // decide to change it or not
             if (!tsInFile) {
-                fc.addFile(filePath).update(filePath);
-                return file + '?' + fc.get(filePath);
+                fc.addFile(targetPath).update(targetPath);
+                cb(null, originTarget + '?' + fc.get(targetPath));
             } else {
-                fc.update(filePath);
-                lastChange = fc.get(filePath);
-                if (tsInFile === lastChange) return file;
-                return file.slice(0, -14) + '?' + lastChange;
+                fc.update(targetPath);
+                lastChange = fc.get(targetPath);
+                if (tsInFile === lastChange) return originTarget;
+                cb(null, originTarget.slice(0, -14) + '?' + lastChange);
             }
         }
 
-        function md5(file, curFileName) {
-            var filePath = path.join(options.baseDir, file),
-                index = filePath.lastIndexOf(path.sep) + 1,
-                relativePath = filePath.slice(0, index),
-                fileName = filePath.slice(index),
+        function md5(originTarget, filePath, cb) {
+            var targetPath = path.join(options.baseDir, originTarget),
+                dirPath = path.dirname(targetPath),
+                fileName = path.basename(targetPath),
                 fileNameSplit = fileName.split('.'),
-                md5InFile = fileNameSplit.length === 3 ? fileNameSplit[1] : '',
-                originFileName = md5InFile ? fileNameSplit[0] + '.' + fileNameSplit[2] : fileName,
-                originFilePath = path.normalize(relativePath + '/' + originFileName);
+                splitLength = fileNameSplit.length,
+                md5InFile = splitLength >= 3 ? fileNameSplit[splitLength - 2] : '',
+                originFileName = md5InFile ? fileNameSplit.slice(0, -2).join('.') + '.' + fileNameSplit[splitLength - 1] : fileName,
+                originFilePath = path.join(dirPath, originFileName);
 
             // if can't find that file, log warn and return
             if (!grunt.file.exists(originFilePath)) {
-                options.warn && grunt.log.warn('File not found: ' + originFileName + ' in ' + curFileName);
-                return file;
+                options.warn && grunt.log.warn('File not found: ' + originFileName + ' in ' + filePath);
+                cb(null, originTarget);
+                return;
             }
 
             // decide to change it or not
-            var md5Now = fc.get(originFilePath, 'md5'),
-                distFileName;
+            var md5Now = fc.get(originFilePath, 'md5');
 
-            if (md5Now === md5InFile) return file;
+            if (md5Now === md5InFile) {
+                cb(null, originTarget);
+                return;
+            }
 
             fc.addFile(originFilePath).update(originFilePath);
-            distFileName = fileNameSplit[0] + '.' + fc.get(originFilePath, 'md5') + '.' + fileNameSplit[fileNameSplit.length - 1];
-            grunt.file.copy(filePath, path.normalize(relativePath + '/' + distFileName));
 
-            return file.replace(fileName, distFileName);
+            var ext = path.extname(originFileName),
+                distFileName = originFileName.replace(ext, '') + '.' + fc.get(originFilePath, 'md5') + ext;
+
+            grunt.file.copy(targetPath, path.join(dirPath, distFileName));
+
+            cb(null, targetPath.replace(fileName, distFileName));
         }
     });
 };

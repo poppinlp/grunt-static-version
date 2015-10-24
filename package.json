@@ -1,6 +1,6 @@
 {
   "name": "grunt-static-version",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Grunt task to update static resource version in html file.",
   "main": "tasks/static-version.js",
   "repository": {
@@ -11,25 +11,29 @@
     "url": "https://github.com/poppinlp/grunt-static-version/issues"
   },
   "author": {
-    "name": "PoppinL",
+    "name": "PoppinLP",
     "email": "poppinlp@gmail.com",
     "url": "http://poppinlp.github.io"
   },
   "license": "MIT",
   "readmeFilename": "README.md",
   "engines": {
-    "node": ">= 0.8.0"
+    "node": ">= 0.12.0"
   },
   "keywords": [
     "gruntplugin",
     "static",
     "resource",
-    "version"
+    "version",
+    "js version",
+    "css version",
+    "image version"
   ],
   "scripts": {
     "test": "grunt test"
   },
   "dependencies": {
+    "async": "^1.4.2",
     "file-changed": "^0.1.0"
   },
   "devDependencies": {
