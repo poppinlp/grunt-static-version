@@ -150,7 +150,7 @@ module.exports = function (grunt) {
 
             grunt.file.copy(targetPath, path.join(dirPath, distFileName));
 
-            cb(null, targetPath.replace(fileName, distFileName));
+            cb(null, originTarget.replace(fileName, distFileName));
         }
     });
 };
