@@ -159,6 +159,9 @@ grunt test
 
 ## History
 
+- 0.2.2
+	- Bugfix
+	- Add test case
 - 0.2.1
 	- Change `dest` option to non-essential. So if it not set, task will rewrite the src file.
 - 0.2.0

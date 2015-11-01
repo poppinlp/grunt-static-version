@@ -25,9 +25,10 @@ module.exports = function (grunt) {
                 async.parallel(task.src.map(function (filePath) {
                     return function (cb) {
                         var reg = new RegExp(options.symbol + '.*?' + options.symbol, 'gi'),
-                            content = grunt.file.read(filePath);
+                            content = grunt.file.read(filePath),
+                            matchArr = content.match(reg) || [];
 
-                        async.parallel(content.match(reg).map(function (word) {
+                        async.parallel(matchArr.map(function (word) {
                             return function (cb) {
                                 var targetFile = word.slice(options.symbol.length, -options.symbol.length);
 
@@ -83,21 +84,6 @@ module.exports = function (grunt) {
                 done();
             }
         });
-
-        function checkFile(filePath, content) {
-            var reg = new RegExp(options.symbol + '.*?' + options.symbol, 'gi');
-
-            async.parallel(content.match(reg).map(function (value) {
-                return new Promise(function (resolve, reject) {
-                    var targetFile = value.slice(options.symbol.length, -options.symbol.length);
-                    cdn(targetFile).then(function (res) {
-                        resolve(res);
-                    });
-                });
-            }), function (err, ret) {
-                console.log(err, ret);
-            });
-        }
 
         function ts(originTarget, filePath, cb) {
             var index = originTarget.indexOf('?'),
