@@ -124,8 +124,8 @@ module.exports = function (grunt) {
                 fileName = path.basename(targetPath),
                 fileNameSplit = fileName.split('.'),
                 splitLength = fileNameSplit.length,
-                md5InFile = splitLength >= 3 ? fileNameSplit[splitLength - 2] : '',
-                originFileName = md5InFile ? fileNameSplit.slice(0, -2).join('.') + '.' + fileNameSplit[splitLength - 1] : fileName,
+                md5InFile = splitLength >= 3 && fileNameSplit[1].length === 16 ? fileNameSplit[1] : '',
+                originFileName = md5InFile ? fileNameSplit[0] + '.' + fileNameSplit.slice(2).join('.') : fileName,
                 originFilePath = path.join(dirPath, originFileName);
 
             // if can't find that file, log warn and return
@@ -145,8 +145,8 @@ module.exports = function (grunt) {
 
             fc.addFile(originFilePath).update(originFilePath);
 
-            var ext = path.extname(originFileName),
-                distFileName = originFileName.replace(ext, '') + '.' + fc.get(originFilePath, 'md5') + ext;
+            var idx = originFileName.indexOf('.'),
+                distFileName = originFileName.slice(0, idx + 1) + fc.get(originFilePath, 'md5') + originFileName.slice(idx);
 
             grunt.file.copy(targetPath, path.join(dirPath, distFileName));
 

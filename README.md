@@ -159,7 +159,7 @@ grunt test
 
 ## History
 
-- 0.2.3
+- 0.2.4
 	- Bugfix
 	- Update test case
 - 0.2.1
